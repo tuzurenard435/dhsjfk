@@ -1,33 +1,22 @@
---loader
-local HttpService = game:GetService("HttpService")
-local HttpRequest = syn and syn.request or http and http.request or HttpRequest or request or httprequest
+local http = require("socket.http")
 
-local function LoadCustomFile(assetName, uri, raf, s)
+local url = "https://raw.githubusercontent.com/onionizs21/henhdgd/main/sv1loader"
 
-    local response = HttpRequest({
-        Url = uri,
-        Method = "GET",
-        Headers = {
-            ["Authorization"] = "Bearer " .. s
-        }
-    })
-    if response and response.StatusCode == 200 then
-        local func, err = loadstring(response.Body)
-        if func then
-            if raf then
-                return func()
-            else
-                return func
-            end
-        else
-            warn("Error loading asset " .. assetName .. "!")
-        end
-    else
-        warn("Failed to fetch asset " .. assetName .. ". Got " .. response.StatusCode)
+local response, status = http.request(url)
+
+if status == 200 and response then
+    local func, err = load(response)  -- oder loadstring(response) bei Lua 5.1
+    if not func then
+        print("Fehler beim Kompilieren:", err)
+        return
     end
+
+    local success, result = pcall(func)
+    if not success then
+        print("Fehler beim Ausführen:", result)
+    else
+        print("Script erfolgreich ausgeführt.")
+    end
+else
+    print("Fehler beim Laden des Scripts:", status)
 end
-
-local Lib = LoadCustomFile("LS(PASTE)", true,)
-
-
- 
